@@ -1,0 +1,28 @@
+#!/bin/bash
+set -x
+set -e
+
+export DOCKER_HOST='tcp://docker:2375'
+
+mkdir -p ~/projects/$1 && cat | tar -x -C ~/projects/$1
+pushd ~/projects/$1
+
+docker build -t $1:latest .
+
+docker tag $1:latest registry:5000/$1
+
+docker push registry:5000/$1:latest
+
+### docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]
+# docker tag myImage myRegistry.com/myImage
+### docker push [REGISTRYHOST/][USERNAME/]NAME[:TAG]
+# docker push myRegistry.com/myImage
+
+
+
+#!/usr/local/bin/ruby
+#puts "Ruby Receiving a push.."
+#puts "==> repository: $1 - #{ARGV[0]}"
+#puts "==> revision: $2 - #{ARGV[1]}"
+#puts "==> username: $3 - #{ARGV[2]}"
+#puts "==> fingerprint: $4 - #{ARGV[3]}"
