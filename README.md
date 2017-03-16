@@ -27,30 +27,31 @@ The container will expose port 22 (default ssh port) and have a docker volume mo
 
 *The ssh keys are provided for convenience. You must create your own in any serious use.*
 
-The version of gitreceive can be upgraded by feting a new version from guthub
+The version of gitreceive can be upgraded by geting a new version from github
 `wget https://raw.github.com/progrium/gitreceive/master/gitreceive`
 
-#The current deployment process...
+# The current deployment process...
 I assume you have a docker registry running, and a 'docker in docker' image running. This container requires linked 'docker' and 'register' images.
 
 Here is what I do:
 
-##Run registry
+## Run registry
 `docker run -d -p 5000:5000 --restart=always --name registry registry:2`
 
-##Starts docker server
+## Starts docker server
 `docker run --privileged --restart=always --name some-docker --link registry:registry -d docker:1.11-dind --insecure-registry registry:5000`
 
-##Run this server
-`docker run --link some-docker:docker --link registry:registry  --restart=always -p 34567:22 -d --name gitreceive` 
+## Run this server
+`docker run --link some-docker:docker --link registry:registry  --restart=always -p 34567:22 -d --name gitreceive gitreceive` 
 
-##Add your ssh key
+## Add your ssh key
 `cat ~/.ssh/id_rsa.pub | ssh -i sshkey root@192.168.99.100 -p 34567 "gitreceive upload-key $(whoami)"`
+Note: You have to have the sshkey in your current directory.
 
-#Working: 
+# Working: 
 At the moment you can push a repo (to remote: git@192.168.99.100:xxx) with a valid `Dockerfile`, and it will use the 'docker in docker' image to build the project and publish the resulting image to the linked registry.
 
-#TODO:
+# TODO:
 * On receiving a repo with compose.yml files, deploy the configuration to the linked docker server.
 * handle errors
 * handle 'upgrading a service'
